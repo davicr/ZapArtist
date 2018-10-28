@@ -12,12 +12,18 @@ namespace ZapArtist
     {
         static void Main(string[] args)
         {
-            // We'll need an image filename as the first argument
-            if (args.Length > 2)
+            if (args.Length >= 3)
             {
                 string pngPath = args[0];
                 string assetsFolder = args[1];
                 string stickerPack = args[2];
+
+                // Are the argument file and folder valid?
+                if (!File.Exists(pngPath) || !Directory.Exists(assetsFolder))
+                {
+                    Console.WriteLine("[ ! ] Invalid argument");
+                    return;
+                }
 
                 // Acquire file name without extension and the folder where the converted sticker should be stored
                 string baseName = Path.GetFileName(pngPath);
@@ -25,13 +31,6 @@ namespace ZapArtist
                 string webpFolder = Path.Combine(assetsFolder, stickerPack);
 
                 Console.WriteLine("[ * ] Generating sticker from: {0}", pngPath);
-
-                // Does the file exist?
-                if (!File.Exists(pngPath))
-                {
-                    Console.WriteLine("[ ! ] File does not exist");
-                    return;
-                }
 
                 // Is a PNG?
                 if (!pngPath.EndsWith(".png"))
@@ -66,6 +65,8 @@ namespace ZapArtist
                     imageFactory.Save(Path.Combine(webpFolder, newName));
                 }
 
+                Console.WriteLine("[ * ] Saved WebP to: {0}", webpFolder);
+
                 // Delete compressed temporary file
                 if (File.Exists(tmpPath))
                     File.Delete(tmpPath);
@@ -85,7 +86,8 @@ namespace ZapArtist
                     }
                 }
                 File.WriteAllText(Path.Combine(assetsFolder, "contents.json"), stickerJson.ToString());
-            } else
+            }
+            else
             {
                 Console.WriteLine(".\\ZapArtist.exe <png image> <asset folder> <sticker pack>");
             }
